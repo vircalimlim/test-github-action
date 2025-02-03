@@ -76,35 +76,22 @@ jobs:
           php-version: 8.2  # Upgrade PHP version
           extensions: mbstring, pdo, pdo_mysql, xml
 
-      # - name: Install Composer Dependencies
-      #   run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      # - name: Install NPM Dependencies & Build
-      #   run: npm install && npm run build
-
       - name: Deploy Files to Server
         uses: easingthemes/ssh-deploy@main
-        env:
+        with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SOURCE: "."
           REMOTE_HOST: ${{ secrets.VPS_HOST }}
           REMOTE_USER: ${{ secrets.VPS_USER }}
           TARGET: "/var/www/medicalrefill.com"
-          ARGS: "-avz --delete" # Ensure sync deletes removed files
+          ARGS: "-avz --delete"  # Ensure sync deletes removed files
 
-      # - name: Run Laravel Post-Deployment Commands
-      #   uses: appleboy/ssh-action@v0.1.10
-      #   with:
-      #     host: ${{ secrets.VPS_HOST }}
-      #     username: ${{ secrets.VPS_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       cd /var/www/medicalrefill.com
-      #       php artisan migrate --force
-      #       php artisan cache:clear
-      #       php artisan config:clear
-      #       php artisan route:clear
-      #       php artisan view:clear
-      #       php artisan optimize
-      #       php artisan queue:restart
-      #       sudo service nginx restart
+      # Run Laravel Post-Deployment Commands (optional)
+      - name: Run Laravel Post-Deployment Commands
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/medicalrefill.com
