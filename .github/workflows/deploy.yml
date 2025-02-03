@@ -76,11 +76,11 @@ jobs:
           php-version: 8.2  # Upgrade PHP version
           extensions: mbstring, pdo, pdo_mysql, xml
 
-      - name: Install Composer Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      # - name: Install Composer Dependencies
+      #   run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Install NPM Dependencies & Build
-        run: npm install && npm run build
+      # - name: Install NPM Dependencies & Build
+      #   run: npm install && npm run build
 
       - name: Deploy Files to Server
         uses: easingthemes/ssh-deploy@main
