@@ -1,59 +1,7 @@
-# name: Deploy Laravel Application to Laravel
+name: Deploy
 
-# # Trigger the workflow on push and 
-# # pull request events on the main branch
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     branches:
-#       - main
-      
-# # Authenticate to the the server via ssh 
-# # and run our deployment script 
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v3
-
-#       - name: Setup PHP
-#         uses: shivammathur/setup-php@v2
-#         with:
-#           php-version: 7.4
-
-#       # - name: Install Composer Dependencies
-#       #   run: composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
-
-#       # - name: Install NPM Dependencies
-#       #   run: npm install && npm run build
-
-#       - name: Synchronize Files to Server
-#         uses: easingthemes/ssh-deploy@main
-#         env:
-#           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-#           SOURCE: "."
-#           REMOTE_HOST: ${{ secrets.VPS_HOST }}
-#           REMOTE_USER: ${{ secrets.VPS_USER }}
-#           TARGET: "/var/www/medicalrefill.com"
-
-#       # - name: Run Remote/Artisan Commands
-#       #   uses: appleboy/ssh-action@v0.1.6
-#       #   with:
-#       #     host: ${{ secrets.VPS_HOST }}
-#       #     username: ${{ secrets.VPS_USER }}
-#       #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-#       #     script: |
-#       #       cd /var/www/medicalrefill.com
-#       #       php artisan optimize
-
-
-
-name: Deploy Laravel Application
-
+# Trigger the workflow on push and 
+# pull request events on the main branch
 on:
   push:
     branches:
@@ -61,37 +9,19 @@ on:
   pull_request:
     branches:
       - main
-
+      
+# Authenticate to the the server via ssh 
+# and run our deployment script 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.2  # Upgrade PHP version
-          extensions: mbstring, pdo, pdo_mysql, xml
-
-      - name: Deploy Files to Server
-        uses: easingthemes/ssh-deploy@main
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SOURCE: "."
-          REMOTE_HOST: ${{ secrets.VPS_HOST }}
-          REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: "/var/www/medicalrefill.com"
-          ARGS: "-avz --delete"  # Ensure sync deletes removed files
-
-      # Run Laravel Post-Deployment Commands (optional)
-      - name: Run Laravel Post-Deployment Commands
-        uses: appleboy/ssh-action@v0.1.10
+      - uses: actions/checkout@v2
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
+          port: ${{ secrets.PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /var/www/medicalrefill.com
+          script: "cd /var/www/html && ./.scripts/deploy.sh"
